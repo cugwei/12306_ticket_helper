@@ -1404,6 +1404,7 @@ function initTicketQuery() {
 	var audio = null; //通知声音
 	var timerCountDown = 0;
 	var timeCount = 0;
+	var sameTicketTypeMinAmount = 0;
 	var autoBook = false;
 	//初始化表单
 	var form = $("form[name=querySingleForm] .cx_from:first");
@@ -1418,6 +1419,7 @@ function initTicketQuery() {
 		"<span style='font-weight:bold;margin-left:10px;color:blue;display:none;'><label><input disabled='disabled' type='checkbox' id='chkAutoPreOrder' />自动预定</label></span>" +
 		"<span style='font-weight:bold;margin-left:10px;color:blue;display: none;'><label><input disabled='disabled' type='checkbox' id='chkFilterByTrain' />开启按车次过滤</label></span>" +
 		"<a href='javascript:;' class='configLink' style='font-weight:bold; color:purple;'>【设置】</a></td></tr>" +
+		"<tr class='append_row'><td colspan='9'>同一席别最小票数：<input type='text' value='1' size='4' id='sameTicketTypeMinAmount' style='text-align:center;' />(不得小于1) </td> </tr>" +
 		"<tr><td colspan='9'><input style='line-height:25px;padding:5px;' disabled='disabled' type='button' value='停止声音' id='btnStopSound' /><input style='line-height:25px;padding:5px;' disabled='disabled'  type='button' value='停止刷新' id='btnStopRefresh' /><span style='margin-left:20px;color:purple;font-weight:bold;' id='serverMsg'></span></td> </tr>"
 	);
 
@@ -1662,6 +1664,8 @@ function initTicketQuery() {
 	});
 	//刷新时间间隔
 	$("#refereshInterval").change(function () { timeCount = Math.max(6, parseInt($("#refereshInterval").val())); }).change();
+	//同席别车票最小票数
+	$("#sameTicketTypeMinAmount").change(function () { sameTicketTypeMinAmount = Math.max(1, parseInt($("#sameTicketTypeMinAmount").val())); }).change();
 
 	//定时查询
 	function resetTimer() {
@@ -1749,7 +1753,9 @@ function initTicketQuery() {
 			var el = $(e);
 			var info = $.trim(el.text()); //Firefox不支持 innerText
 
-			if (info != "--" && info != "无") {
+			if (info == '有' ||
+				(info != "--" && info != "无" && parseInt(info) >= sameTicketTypeMinAmount)) {
+
 				hasTicket = 2;
 				el.css("background-color", "#95AFFD");
 			}
